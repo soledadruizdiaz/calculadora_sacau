@@ -11,7 +11,7 @@ Los índices son los **ejemplos del script original**: Art. 42: 1,0 / 1,8 / 2,5;
 ## Subir a GitHub Pages
 
 1. Crear un repositorio público en GitHub, por ejemplo `calculadora-sacau`.
-2. Subir los cinco archivos descomprimidos (`index.html`, `styles.css`, `app.js`, `UA_logo_sinfondo.png`, `README.md`) a la **raíz** del repositorio, mediante **Add file → Upload files → Commit changes**. No subir el ZIP como único archivo.
+2. Subir los cinco archivos descomprimidos (`index.html`, `styles.css`, `app-sacau-v3.js`, `UA_logo_sinfondo.png`, `README.md`) a la **raíz** del repositorio, mediante **Add file → Upload files → Commit changes**. No subir el ZIP como único archivo. Si ya publicaste una versión anterior, reemplazá `index.html` y agregá `app-sacau-v3.js`; el `app.js` anterior puede eliminarse del repositorio.
 3. En **Settings → Pages**, elegir **Deploy from a branch**, rama `main`, carpeta `/(root)` y pulsar **Save**.
 4. La página quedará en `https://TU_USUARIO.github.io/calculadora-sacau/` una vez finalizada la publicación.
 
