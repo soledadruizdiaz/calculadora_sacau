@@ -1,6 +1,8 @@
 const INDICES = {42: {1: 1, 2: 1.8, 3: 2.5}, 43: {1: .5, 2: 1.2, 3: 2}};
 const COLUMNAS = ["Asignatura", "Tipo", "Regimen", "Modalidad", "Nivel", "HIP"];
+const NIVELES = {1: "Introductoria", 2: "Trayectoria", 3: "Integración/Finalización"};
 let resultados = [];
+let archivoSeleccionado = null;
 let nombreArchivo = "plan_estudios";
 const $ = id => document.getElementById(id);
 const formato = n => new Intl.NumberFormat("es-AR", {maximumFractionDigits: 2}).format(n);
@@ -20,6 +22,17 @@ function leerNumero(value) {
   if (!s) return NaN;
   const decimal = s.includes(",") ? s.replace(/\./g, "").replace(",", ".") : s;
   return Number(decimal);
+}
+function seleccionar(file) {
+  limpiar();
+  archivoSeleccionado = null;
+  $("process-button").disabled = true;
+  $("file-label").textContent = file?.name || "Arrastrá tu archivo acá";
+  if (!file) return estado("Seleccioná un archivo para comenzar.");
+  if (!/\.xlsx?$/i.test(file.name)) return estado("Seleccioná un archivo de Excel con extensión .xls o .xlsx.", "error");
+  archivoSeleccionado = file;
+  $("process-button").disabled = false;
+  estado(`Archivo seleccionado: ${file.name}. Presioná «Procesar archivo» para calcular.`);
 }
 async function procesar(file) {
   limpiar();
@@ -46,11 +59,16 @@ async function procesar(file) {
       if (!String(r.Asignatura).trim()) problemas.push("Asignatura vacía");
       if (!Object.hasOwn(INDICES[42], tipo)) problemas.push("Tipo debe ser 1, 2 o 3");
       if (!Object.hasOwn(INDICES, regimen)) problemas.push("Regimen debe ser 42 o 43");
-      if (!String(r.Nivel).trim()) problemas.push("Nivel vacío");
+      const modalidad = normalizar(r.Modalidad);
+      if (modalidad !== "presencial" && modalidad !== "a distancia") problemas.push("Modalidad debe ser Presencial o A Distancia");
+      const nivel = normalizar(r.Nivel).replace(/\s*\/\s*/g, "/");
+      const nivelesValidos = tipo === 3 ? ["integracion", "finalizacion", "integracion/finalizacion"] : [normalizar(NIVELES[tipo])];
+      if (Object.hasOwn(NIVELES, tipo) && !nivelesValidos.includes(nivel))
+        problemas.push(`Nivel debe ser ${NIVELES[tipo]} para Tipo ${tipo}`);
       if (!Number.isFinite(hip) || hip < 0) problemas.push("HIP debe ser un número no negativo");
       if (problemas.length) { errores.push(`Fila ${i + 2}: ${problemas.join("; ")}`); return; }
       const hta = hip * INDICES[regimen][tipo];
-      datos.push({Asignatura: String(r.Asignatura).trim(), Tipo: tipo, Regimen: regimen, Modalidad: String(r.Modalidad).trim(), Nivel: String(r.Nivel).trim(), HIP: hip, HTA: hta, Total: hip + hta, CRE: (hip + hta) / 25});
+      datos.push({Asignatura: String(r.Asignatura).trim(), Tipo: tipo, Regimen: regimen, Modalidad: modalidad === "presencial" ? "Presencial" : "A Distancia", Nivel: NIVELES[tipo], HIP: hip, HTA: hta, Total: hip + hta, CRE: Math.round((hip + hta) / 25)});
     });
     if (errores.length) throw Error("Corregí el archivo y volvé a cargarlo:\n" + errores.slice(0, 8).join("\n") + (errores.length > 8 ? `\n…y ${errores.length - 8} fila(s) más.` : ""));
     if (!datos.length) throw Error("El archivo no contiene asignaturas debajo de los encabezados.");
@@ -62,14 +80,14 @@ async function procesar(file) {
 }
 function niveles() {
   const mapa = new Map();
-  resultados.forEach(r => mapa.set(r.Nivel, (mapa.get(r.Nivel) || 0) + r.CRE));
-  return [...mapa.entries()];
+  resultados.forEach(r => mapa.set(r.Nivel, (mapa.get(r.Nivel) || 0) + r.Total));
+  return [...mapa.entries()].map(([nivel, horas]) => [nivel, Math.round(horas / 25)]);
 }
 function mostrar() {
   $("empty-results").hidden = true; $("results").hidden = false;
   $("count").textContent = formato(resultados.length);
   $("hours").textContent = formato(resultados.reduce((s,r) => s + r.Total, 0));
-  $("credits").textContent = formato(resultados.reduce((s,r) => s + r.CRE, 0));
+  $("credits").textContent = formato(Math.round(resultados.reduce((s,r) => s + r.Total, 0) / 25));
   const body = $("results-body"); body.replaceChildren();
   resultados.forEach(r => {
     const tr = document.createElement("tr");
@@ -104,11 +122,12 @@ function descargarPDF() {
     theme: "striped", headStyles: {fillColor: [21, 75, 122]}, styles: {fontSize: 9}, tableWidth: 100});
   doc.save(`${nombreArchivo}_sacau.pdf`);
 }
-$("file-input").addEventListener("change", e => procesar(e.target.files[0]));
+$("file-input").addEventListener("change", e => seleccionar(e.target.files[0]));
+$("process-button").addEventListener("click", () => procesar(archivoSeleccionado));
 const dropzone = $("dropzone");
 ["dragenter", "dragover"].forEach(event => dropzone.addEventListener(event, e => {e.preventDefault(); dropzone.classList.add("dragover");}));
 ["dragleave", "drop"].forEach(event => dropzone.addEventListener(event, e => {e.preventDefault(); dropzone.classList.remove("dragover");}));
-dropzone.addEventListener("drop", e => procesar(e.dataTransfer.files[0]));
+dropzone.addEventListener("drop", e => seleccionar(e.dataTransfer.files[0]));
 $("template-button").addEventListener("click", descargarPlantilla);
 $("excel-button").addEventListener("click", descargarExcel);
 $("pdf-button").addEventListener("click", descargarPDF);

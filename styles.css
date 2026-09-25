@@ -14,3 +14,5 @@
 .notice{background:#edf4ff}
 @media(max-width:750px){.masthead{padding:20px 17px}.university-logo{width:min(255px,70vw)}.brand-rule{height:33px}.unit-name{font-size:.85rem;max-width:135px}}
 .logout{margin-left:auto}.logout button{background:white;color:#20539b;border:1px solid #a9c1dc;border-radius:8px;padding:9px 13px;font:inherit;font-size:.86rem;font-weight:700;cursor:pointer}@media(max-width:750px){.logout{margin-left:0;width:100%}}
+.upload-actions{display:flex;justify-content:flex-start;margin-top:18px}.upload-actions .button{min-width:170px}.dropzone strong{max-width:100%;overflow-wrap:anywhere}
+.rounding-note{color:#5b6c83;font-size:.86rem;line-height:1.5;margin:-8px 0 18px}
