@@ -9,7 +9,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
-  <script defer src="app-sacau-v3.js"></script>
+  <script defer src="app-sacau-v5.js"></script>
 </head>
 <body>
   <main class="container">
@@ -19,8 +19,19 @@
       <p>Convertí las horas de tu plan de estudios en créditos y obtené una tabla lista para revisar o compartir.</p>
     </header>
 
+    <section class="panel" aria-labelledby="career-heading">
+      <div class="section-heading"><span class="step">01</span><div><h2 id="career-heading">Datos de la carrera</h2><p>Podés elegirlos aquí o incluir Facultad y Carrera en la hoja «Datos de la carrera» del Excel.</p></div></div>
+      <div class="career-fields">
+        <div class="field career-field"><label for="faculty-select">Facultad</label><select id="faculty-select"><option value="">Seleccioná una facultad</option><option>Facultad de Ingeniería</option><option value="__other__">Agregar otra facultad…</option></select><div id="new-faculty-wrap" class="new-career" hidden><label for="new-faculty">Nombre de la nueva facultad</label><div class="new-career-row"><input id="new-faculty" maxlength="120" placeholder="Escribí el nombre completo"><button id="save-faculty" class="button secondary" type="button">Agregar</button></div></div></div>
+        <div class="field career-field"><label for="career-select">Carrera</label><select id="career-select" required><option value="">Seleccioná una carrera</option><option>Ingeniería en Informática</option><option>Licenciatura en Informática</option><option>Analista Universitario en Ciencia de Datos</option><option>Tecnicatura Universitaria en Mecatrónica</option><option value="__other__">Agregar otra carrera…</option></select><div id="new-career-wrap" class="new-career" hidden><label for="new-career">Nombre de la nueva carrera</label><div class="new-career-row"><input id="new-career" maxlength="120" placeholder="Escribí el nombre completo"><button id="save-career" class="button secondary" type="button">Agregar</button></div></div></div>
+        <div class="field"><label for="modality-select">Modalidad</label><select id="modality-select" required><option value="">Seleccioná una modalidad</option><option>Presencial</option><option>A Distancia</option></select></div>
+        <div class="field"><label for="regime-select">Artículo de la Ley de Educación Superior</label><select id="regime-select" required><option value="">Seleccioná un artículo</option><option value="42">Artículo 42</option><option value="43">Artículo 43</option></select></div>
+      </div>
+      <p id="career-status" class="field-message" role="status" aria-live="polite"></p>
+    </section>
+
     <section class="panel" aria-labelledby="upload-heading">
-      <div class="section-heading"><span class="step">01</span><div><h2 id="upload-heading">Cargar plan de estudios</h2><p>Elegí un archivo .xls o .xlsx y luego presioná «Procesar». Se utilizará la primera hoja.</p></div></div>
+      <div class="section-heading"><span class="step">02</span><div><h2 id="upload-heading">Cargar plan de estudios</h2><p>Elegí un archivo .xls o .xlsx y luego presioná «Procesar». Se utilizará la primera hoja.</p></div></div>
       <div class="upload-grid">
         <div class="dropzone" id="dropzone">
           <div class="sheet-icon" aria-hidden="true">XLS</div>
@@ -31,10 +42,10 @@
         </div>
         <div class="requirements">
           <h3>Formato esperado</h3>
-          <p>La primera fila debe contener estos encabezados:</p>
-          <div class="chips"><span>Asignatura</span><span>Tipo</span><span>Regimen</span><span>Modalidad</span><span>Nivel</span><span>HIP</span></div>
+          <p>En la hoja «Plan de estudios», la primera fila debe contener:</p>
+          <div class="chips"><span>Asignatura</span><span>Tipo</span><span>Nivel</span><span>HIP</span></div>
           <p><b>Tipo y Nivel:</b> 1 = Introductoria; 2 = Trayectoria; 3 = Integración/Finalización.</p>
-          <p><b>Régimen:</b> 42 o 43. <b>Modalidad:</b> Presencial o A Distancia. <b>HIP:</b> horas presenciales, con valor igual o mayor a cero.</p>
+          <p><b>HIP:</b> horas presenciales, con valor igual o mayor a cero. En «Datos de la carrera» podés indicar Facultad y Carrera una sola vez.</p>
           <button class="text-button" id="template-button" type="button">Descargar plantilla de Excel ↗</button>
         </div>
       </div>
@@ -43,18 +54,19 @@
     </section>
 
     <section class="panel" aria-labelledby="results-heading">
-      <div class="section-heading"><span class="step">02</span><div><h2 id="results-heading">Revisar resultados</h2><p>La tabla y el resumen aparecen después de procesar el archivo.</p></div></div>
+      <div class="section-heading"><span class="step">03</span><div><h2 id="results-heading">Revisar resultados</h2><p>La tabla y el resumen aparecen después de procesar el archivo.</p></div></div>
       <div id="empty-results" class="empty">Los resultados de las asignaturas aparecerán acá.</div>
       <div id="results" hidden>
+        <p id="career-summary" class="career-summary"></p>
         <div class="summary"><div><span>Asignaturas</span><strong id="count">0</strong></div><div><span>Horas totales</span><strong id="hours">0</strong></div><div><span>Créditos totales</span><strong id="credits">0</strong></div></div>
         <p class="rounding-note">Los créditos se redondean por asignatura, por nivel y sobre el total general. Por eso, la suma de los valores visibles puede diferir del total general.</p>
-        <div class="table-scroll"><table><thead><tr><th>Asignatura</th><th>Tipo</th><th>Régimen</th><th>Modalidad</th><th>Nivel</th><th class="numeric">HIP</th><th class="numeric">HTA</th><th class="numeric">Total</th><th class="numeric">CRE</th></tr></thead><tbody id="results-body"></tbody></table></div>
+        <div class="table-scroll"><table><thead><tr><th>Asignatura</th><th>Tipo</th><th>Nivel</th><th class="numeric">HIP</th><th class="numeric">HTA</th><th class="numeric">Total</th><th class="numeric">CRE</th></tr></thead><tbody id="results-body"></tbody></table></div>
         <h3>Créditos por nivel</h3><div id="level-summary" class="level-summary"></div>
       </div>
     </section>
 
     <section class="panel downloads" aria-labelledby="downloads-heading">
-      <div class="section-heading"><span class="step">03</span><div><h2 id="downloads-heading">Descargar archivos</h2><p>Guardá la tabla completa en Excel o el informe con resumen en PDF.</p></div></div>
+      <div class="section-heading"><span class="step">04</span><div><h2 id="downloads-heading">Descargar archivos</h2><p>Guardá la tabla completa en Excel o el informe con resumen en PDF.</p></div></div>
       <div class="actions"><button id="excel-button" class="button primary" disabled>Descargar Excel</button><button id="pdf-button" class="button secondary" disabled>Descargar PDF</button></div>
     </section>
 
