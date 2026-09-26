@@ -9,7 +9,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
-  <script defer src="app-sacau-v5.js"></script>
+  <script defer src="app-sacau-v7.js"></script>
 </head>
 <body>
   <main class="container">
@@ -20,10 +20,12 @@
     </header>
 
     <section class="panel" aria-labelledby="career-heading">
-      <div class="section-heading"><span class="step">01</span><div><h2 id="career-heading">Datos de la carrera</h2><p>Podés elegirlos aquí o incluir Facultad y Carrera en la hoja «Datos de la carrera» del Excel.</p></div></div>
+      <div class="section-heading"><span class="step">01</span><div><h2 id="career-heading">Datos de la carrera</h2><p>Seleccioná una facultad y una carrera del catálogo institucional.</p></div></div>
+      <div class="catalog-upload"><div><strong>Catálogo de facultades y carreras</strong><p>Se carga automáticamente desde el archivo del repositorio. Para agregar opciones disponibles para todos, editá <code>catalogo_facultades_carreras.csv</code> en GitHub.</p></div></div>
+      <p id="catalog-status" class="field-message" role="status" aria-live="polite">Cargando catálogo…</p>
       <div class="career-fields">
-        <div class="field career-field"><label for="faculty-select">Facultad</label><select id="faculty-select"><option value="">Seleccioná una facultad</option><option>Facultad de Ingeniería</option><option value="__other__">Agregar otra facultad…</option></select><div id="new-faculty-wrap" class="new-career" hidden><label for="new-faculty">Nombre de la nueva facultad</label><div class="new-career-row"><input id="new-faculty" maxlength="120" placeholder="Escribí el nombre completo"><button id="save-faculty" class="button secondary" type="button">Agregar</button></div></div></div>
-        <div class="field career-field"><label for="career-select">Carrera</label><select id="career-select" required><option value="">Seleccioná una carrera</option><option>Ingeniería en Informática</option><option>Licenciatura en Informática</option><option>Analista Universitario en Ciencia de Datos</option><option>Tecnicatura Universitaria en Mecatrónica</option><option value="__other__">Agregar otra carrera…</option></select><div id="new-career-wrap" class="new-career" hidden><label for="new-career">Nombre de la nueva carrera</label><div class="new-career-row"><input id="new-career" maxlength="120" placeholder="Escribí el nombre completo"><button id="save-career" class="button secondary" type="button">Agregar</button></div></div></div>
+        <div class="field career-field"><label for="faculty-select">Facultad</label><select id="faculty-select"><option value="">Seleccioná una facultad</option><option value="__other__">Agregar otra facultad…</option></select><div id="new-faculty-wrap" class="new-career" hidden><label for="new-faculty">Nombre de la nueva facultad</label><div class="new-career-row"><input id="new-faculty" maxlength="120" placeholder="Escribí el nombre completo"><button id="save-faculty" class="button secondary" type="button">Agregar</button></div></div></div>
+        <div class="field career-field"><label for="career-select">Carrera</label><select id="career-select" required><option value="">Seleccioná una carrera</option><option value="__other__">Agregar otra carrera…</option></select><div id="new-career-wrap" class="new-career" hidden><label for="new-career">Nombre de la nueva carrera</label><div class="new-career-row"><input id="new-career" maxlength="120" placeholder="Escribí el nombre completo"><button id="save-career" class="button secondary" type="button">Agregar</button></div></div></div>
         <div class="field"><label for="modality-select">Modalidad</label><select id="modality-select" required><option value="">Seleccioná una modalidad</option><option>Presencial</option><option>A Distancia</option></select></div>
         <div class="field"><label for="regime-select">Artículo de la Ley de Educación Superior</label><select id="regime-select" required><option value="">Seleccioná un artículo</option><option value="42">Artículo 42</option><option value="43">Artículo 43</option></select></div>
       </div>
@@ -42,10 +44,10 @@
         </div>
         <div class="requirements">
           <h3>Formato esperado</h3>
-          <p>En la hoja «Plan de estudios», la primera fila debe contener:</p>
+          <p>La primera hoja debe contener:</p>
           <div class="chips"><span>Asignatura</span><span>Tipo</span><span>Nivel</span><span>HIP</span></div>
           <p><b>Tipo y Nivel:</b> 1 = Introductoria; 2 = Trayectoria; 3 = Integración/Finalización.</p>
-          <p><b>HIP:</b> horas presenciales, con valor igual o mayor a cero. En «Datos de la carrera» podés indicar Facultad y Carrera una sola vez.</p>
+          <p><b>HIP:</b> horas presenciales, con valor igual o mayor a cero. Facultad y Carrera se eligen arriba, a partir del catálogo separado.</p>
           <button class="text-button" id="template-button" type="button">Descargar plantilla de Excel ↗</button>
         </div>
       </div>

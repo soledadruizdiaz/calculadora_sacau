@@ -1,15 +1,15 @@
 # Calculadora de créditos SACAU
 
-Página para la Unidad de Transformación Curricular de la Universidad Atlántida. Permite seleccionar facultad, carrera, modalidad y artículo 42 o 43; cargar un Excel con asignaturas; calcular HTA, Total y CRE; revisar los resultados y descargar un Excel y un PDF. El archivo se procesa en el navegador y no se guarda en ningún servidor.
+Página para la Unidad de Transformación Curricular de la Universidad Atlántida. Lee automáticamente el catálogo de facultades y carreras que está en el repositorio, permite seleccionar modalidad y artículo 42 o 43, procesar un Excel de asignaturas, revisar resultados y descargar Excel y PDF. El archivo de materias se procesa en el navegador y no se guarda en ningún servidor.
 
 ## Formato de entrada
 
-La plantilla contiene dos hojas:
+Hay **dos archivos independientes**:
 
-- **Datos de la carrera:** `Facultad` y `Carrera` en la primera fila, y sus valores en la segunda. Al procesar el archivo, se seleccionan automáticamente en los combos. Si no existen, se agregan a los listados y se recuerdan en ese navegador cuando el almacenamiento local está disponible. Las carreras añadidas no se comparten automáticamente con otros dispositivos.
-- **Plan de estudios:** `Asignatura`, `Tipo`, `Nivel`, `HIP` en la primera fila y una fila por asignatura.
+- **Catálogo de facultades y carreras:** `catalogo_facultades_carreras.csv` queda en la raíz del repositorio y la página lo lee automáticamente al abrirse. Su primera fila debe ser exactamente `Facultad,Carrera`. Cada fila siguiente es una carrera asociada a una facultad. Si un nombre contiene coma, encerrarlo entre comillas dobles. Guardar como CSV UTF-8. Editar y confirmar este archivo en GitHub para que una nueva opción quede disponible para **todos**. El ZIP trae un ejemplo con cuatro carreras de la Facultad de Ingeniería. Elegir una facultad filtra sus carreras.
+- **Plan de estudios:** Excel `.xls` o `.xlsx` con `Asignatura`, `Tipo`, `Nivel`, `HIP` en la primera fila y una fila por asignatura. No lleva Facultad ni Carrera. El botón **Descargar plantilla de Excel** genera este archivo.
 
-La modalidad (Presencial o A Distancia) y el artículo (42 o 43) se seleccionan en la página. Para un Excel antiguo sin hoja «Datos de la carrera», también se pueden elegir allí manualmente la Facultad y la Carrera.
+La modalidad (Presencial o A Distancia) y el artículo (42 o 43) se seleccionan en la página. También es posible agregar manualmente una facultad y una carrera desde los combos, pero esa opción queda guardada **solo en ese navegador**. Para compartirla, agregar la fila al CSV del repositorio.
 
 Las columnas adicionales de versiones anteriores se ignoran: los valores de Régimen y Modalidad utilizados serán siempre los seleccionados en la página. Tipo 1 corresponde a Nivel Introductoria; Tipo 2, a Trayectoria; Tipo 3, a Integración/Finalización (también se admite Integración o Finalización como abreviatura). `HIP` debe ser un número no negativo. La página ofrece una plantilla vacía. Al seleccionar el Excel se habilita el botón **Procesar archivo**; los cálculos comienzan solo al pulsarlo.
 
@@ -20,7 +20,7 @@ Los índices son los **ejemplos del script original**: Art. 42: 1,0 / 1,8 / 2,5;
 ## Subir a GitHub Pages
 
 1. Crear un repositorio público en GitHub, por ejemplo `calculadora-sacau`.
-2. Subir los cinco archivos descomprimidos (`index.html`, `styles.css`, `app-sacau-v5.js`, `UA_logo_sinfondo.png`, `README.md`) a la **raíz** del repositorio, mediante **Add file → Upload files → Commit changes**. No subir el ZIP como único archivo. Si ya publicaste una versión anterior, reemplazá `index.html` y `styles.css` y agregá `app-sacau-v5.js`; el JavaScript anterior puede eliminarse del repositorio.
+2. Subir los seis archivos descomprimidos (`index.html`, `styles.css`, `app-sacau-v7.js`, `UA_logo_sinfondo.png`, `catalogo_facultades_carreras.csv`, `README.md`) a la **raíz** del repositorio, mediante **Add file → Upload files → Commit changes**. No subir el ZIP como único archivo. Si ya publicaste una versión anterior, reemplazá `index.html` y `styles.css` y agregá **tanto el JavaScript nuevo como el CSV**; el JavaScript anterior puede eliminarse.
 3. En **Settings → Pages**, elegir **Deploy from a branch**, rama `main`, carpeta `/(root)` y pulsar **Save**.
 4. La página quedará en `https://TU_USUARIO.github.io/calculadora-sacau/` una vez finalizada la publicación.
 
