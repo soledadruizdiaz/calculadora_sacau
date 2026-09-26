@@ -9,7 +9,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
-  <script defer src="app-sacau-v7.js"></script>
+  <script defer src="app-sacau-v8.js"></script>
 </head>
 <body>
   <main class="container">
@@ -21,15 +21,13 @@
 
     <section class="panel" aria-labelledby="career-heading">
       <div class="section-heading"><span class="step">01</span><div><h2 id="career-heading">Datos de la carrera</h2><p>Seleccioná una facultad y una carrera del catálogo institucional.</p></div></div>
-      <div class="catalog-upload"><div><strong>Catálogo de facultades y carreras</strong><p>Se carga automáticamente desde el archivo del repositorio. Para agregar opciones disponibles para todos, editá <code>catalogo_facultades_carreras.csv</code> en GitHub.</p></div></div>
-      <p id="catalog-status" class="field-message" role="status" aria-live="polite">Cargando catálogo…</p>
+      <p id="catalog-status" class="field-message" role="status" aria-live="polite"></p>
       <div class="career-fields">
-        <div class="field career-field"><label for="faculty-select">Facultad</label><select id="faculty-select"><option value="">Seleccioná una facultad</option><option value="__other__">Agregar otra facultad…</option></select><div id="new-faculty-wrap" class="new-career" hidden><label for="new-faculty">Nombre de la nueva facultad</label><div class="new-career-row"><input id="new-faculty" maxlength="120" placeholder="Escribí el nombre completo"><button id="save-faculty" class="button secondary" type="button">Agregar</button></div></div></div>
-        <div class="field career-field"><label for="career-select">Carrera</label><select id="career-select" required><option value="">Seleccioná una carrera</option><option value="__other__">Agregar otra carrera…</option></select><div id="new-career-wrap" class="new-career" hidden><label for="new-career">Nombre de la nueva carrera</label><div class="new-career-row"><input id="new-career" maxlength="120" placeholder="Escribí el nombre completo"><button id="save-career" class="button secondary" type="button">Agregar</button></div></div></div>
+        <div class="field career-field"><label for="faculty-select">Facultad</label><select id="faculty-select" required><option value="">Seleccioná una facultad</option></select></div>
+        <div class="field career-field"><label for="career-select">Carrera</label><select id="career-select" required><option value="">Seleccioná una carrera</option></select></div>
         <div class="field"><label for="modality-select">Modalidad</label><select id="modality-select" required><option value="">Seleccioná una modalidad</option><option>Presencial</option><option>A Distancia</option></select></div>
         <div class="field"><label for="regime-select">Artículo de la Ley de Educación Superior</label><select id="regime-select" required><option value="">Seleccioná un artículo</option><option value="42">Artículo 42</option><option value="43">Artículo 43</option></select></div>
       </div>
-      <p id="career-status" class="field-message" role="status" aria-live="polite"></p>
     </section>
 
     <section class="panel" aria-labelledby="upload-heading">
@@ -62,8 +60,8 @@
         <p id="career-summary" class="career-summary"></p>
         <div class="summary"><div><span>Asignaturas</span><strong id="count">0</strong></div><div><span>Horas totales</span><strong id="hours">0</strong></div><div><span>Créditos totales</span><strong id="credits">0</strong></div></div>
         <p class="rounding-note">Los créditos se redondean por asignatura, por nivel y sobre el total general. Por eso, la suma de los valores visibles puede diferir del total general.</p>
-        <div class="table-scroll"><table><thead><tr><th>Asignatura</th><th>Tipo</th><th>Nivel</th><th class="numeric">HIP</th><th class="numeric">HTA</th><th class="numeric">Total</th><th class="numeric">CRE</th></tr></thead><tbody id="results-body"></tbody></table></div>
-        <h3>Créditos por nivel</h3><div id="level-summary" class="level-summary"></div>
+        <div class="table-scroll"><table><thead><tr><th>Asignatura</th><th>Tipo</th><th>Nivel</th><th class="numeric">HIP</th><th class="numeric">HTA</th><th class="numeric">Total</th><th class="numeric">CRE</th></tr></thead><tbody id="results-body"></tbody><tfoot id="results-total"></tfoot></table></div>
+        <h3>Resumen por nivel</h3><div class="table-scroll"><table><thead><tr><th>Nivel</th><th class="numeric">HIP</th><th class="numeric">HTA</th><th class="numeric">Total</th><th class="numeric">CRE</th></tr></thead><tbody id="level-summary"></tbody><tfoot id="level-total"></tfoot></table></div>
       </div>
     </section>
 
